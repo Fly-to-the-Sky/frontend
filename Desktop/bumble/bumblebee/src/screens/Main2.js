@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import {
   StyleSheet,
+  Image,
   Dimensions,
   Modal,
   View,
+  Text,
   Pressable,
+  TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
@@ -37,34 +40,56 @@ const StyledInput = styled.TextInput`
 
 const StyledButton = styled.TouchableOpacity`
   margin: 3px;
-  width: 70%;
+  width: 98%;
   height: 45px;
   border-radius: 10px;
   background-color: #dfab02;
   border: 1px solid #dfab02;
 `;
 
-const StyledButton2 = styled.TouchableOpacity`
-  margin: 3px;
-  width: 27%;
-  height: 45px;
-  border-radius: 10px;
-  background-color: #285fb4;
-  border: 1px solid #285fb4;
-  flex-direction: end;
-`;
-
-const ButtonContainer = styled.View`
-  flex-direction: row;
-`;
-
 const ButtonText = styled.Text`
   color: #000000;
   align-self: center;
   justify-content: center;
-  margin-top: 13px;
+  margin-top: 15px;
   font-weight: 800;
   font-size: 18px;
+`;
+
+// 여기부터 모달
+const StyledModalContainer = styled.View`
+  flex-direction: column;
+  align-items: center;
+  /* 모달창 크기 조절 */
+  width: 320px;
+  height: 220px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+`;
+
+const StyledModalButton = styled.TouchableOpacity`
+  /* Modal Button들의 모달창 내의 높이를 균일하게 하기 위하여 flex를 줌 */
+  flex: 1;
+  width: 320px;
+  justify-content: center;
+`;
+
+// 모달창 내에서 버튼으로 활용되지 않는 타이틀 부분은 View 만듬
+const StyledModalGradeWrapper = styled.View`
+  flex: 1;
+  width: 320px;
+  justify-content: center;
+`;
+
+const StyledModalGradeText = styled.Text`
+  align-self: center;
+  font-size: 15px;
+`;
+
+const StyledModalText = styled.Text`
+  align-self: center;
+  color: blue;
+  font-size: 15px;
 `;
 
 const StyledModal = styled.View`
@@ -75,6 +100,7 @@ const StyledModal = styled.View`
   border-radius: 20px;
   padding: 2px;
   overflow: scroll;
+
   align-items: "center";
   /* shadow: "#000";
     shadow-offset: {
@@ -88,56 +114,63 @@ const StyledModalImg = styled.Image`
   object-fit: cover;
   /* overflow: scroll; */
 `;
-const Main = ({ navigation }) => {
+const Main2 = ({ navigation }) => {
   //State를 이용하여 Modal을 제어함
   const [modalVisible, setModalVisible] = useState(false);
-  const [modal2Visible, setModal2Visible] = useState(false);
+
   return (
-    <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+    <TouchableWithoutFeedback
+      onPress={() => {
+        console.log("dismissed keyboard");
+        Keyboard.dismiss();
+      }}
+    >
       <Container>
         <StyledView>
           <StyledInput placeholder="장소를 검색해보세요!" />
-          <ButtonContainer>
-            <StyledButton
-              onPress={() => {
-                setModalVisible(true), Keyboard.dismiss();
-              }}
-            >
-              <ButtonText>여행지 검색</ButtonText>
-            </StyledButton>
-            <StyledButton2
-              onPress={() => {
-                setModal2Visible(true), Keyboard.dismiss();
-              }}
-            >
-              <ButtonText style={{ color: "#ffffff" }}>추천 관광지</ButtonText>
-            </StyledButton2>
-          </ButtonContainer>
-          <Pressable
-            style={{ flex: 1 }}
-            onPress={() => setModalVisible(!modalVisible)}
+          {/* <GooglePlacesAutocomplete
+          minLength={2}
+          placeholder="장소를 검색해보세요!"
+          query={{
+            key: "AIzaSyAM55rqSfcujPDfoH-QXUDh0zQF8_wB01M",
+            language: "ko",
+            components: "country:kr",
+          }}
+          keyboardShouldPersistTaps={"handled"}
+          fetchDetails={true}
+          onPress={(data, details) => {
+            console.log(data, details);
+          }}
+          onFail={(error) => console.log(error)}
+          onNotFound={() => console.log("no results")}
+          keepResultsAfterBlur={true}
+          enablePoweredByContainer={false}
+          styles={styles.search}
+        /> */}
+          <StyledButton onPress={() => setModalVisible(true)}>
+            <ButtonText>여행지 검색</ButtonText>
+          </StyledButton>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
+            }}
           >
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
-                setModalVisible(!modalVisible);
-              }}
-            >
-              <View style={styles.centeredView}>
-                <StyledModal>
-                  {/* <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}
-                  >
-                    <Text style={styles.textStyle}>X</Text>
-                  </Pressable> */}
-                  <StyledModalImg
-                    source={require("../../assets/modal-img2.png")}
-                  />
-                  {/* <Text style={styles.modalText}>장애물 안내</Text>
+            <View style={styles.centeredView}>
+              <StyledModal>
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={styles.textStyle}>X</Text>
+                </Pressable>
+                <StyledModalImg
+                  source={require("../../assets/modal-img2.png")}
+                />
+                {/* <Text style={styles.modalText}>장애물 안내</Text>
 
               <Pressable
                 style={[styles.button, styles.buttonClose]}
@@ -145,46 +178,9 @@ const Main = ({ navigation }) => {
               >
                 <Text style={styles.textStyle}>Hide Modal</Text>
               </Pressable>*/}
-                </StyledModal>
-              </View>
-            </Modal>
-          </Pressable>
-          <Pressable
-            style={{ flex: 1 }}
-            onPress={() => setModalVisible(!modal2Visible)}
-          >
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modal2Visible}
-              onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
-                setModal2Visible(!modal2Visible);
-              }}
-            >
-              <View style={styles.centeredView}>
-                <StyledModal>
-                  {/* <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}
-                  >
-                    <Text style={styles.textStyle}>X</Text>
-                  </Pressable> */}
-                  <StyledModalImg
-                    source={require("../../assets/modal-img3.png")}
-                  />
-                  {/* <Text style={styles.modalText}>장애물 안내</Text>
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>*/}
-                </StyledModal>
-              </View>
-            </Modal>
-          </Pressable>
+              </StyledModal>
+            </View>
+          </Modal>
         </StyledView>
         <MapView
           style={styles.map}
@@ -195,8 +191,6 @@ const Main = ({ navigation }) => {
             latitudeDelta: 0.0062,
             longitudeDelta: 0.0041,
           }}
-          // region={this.state.region}
-          // onRegionChange={this.onRegionChange}
         >
           <Marker
             coordinate={{
@@ -291,7 +285,7 @@ const Main = ({ navigation }) => {
           />
         </MapView>
       </Container>
-    </Pressable>
+    </TouchableWithoutFeedback>
   );
 };
 const styles = StyleSheet.create({
@@ -350,4 +344,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Main;
+export default Main2;
