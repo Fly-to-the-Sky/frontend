@@ -22,7 +22,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.yunhee1.bumblebee"
     },
     "web": {
       "favicon": "./assets/favicon.png"
